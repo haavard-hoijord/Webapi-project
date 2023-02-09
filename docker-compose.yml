@@ -1,29 +1,27 @@
 services:
-  sql:
-    image: "mysql"
+  oracle-db:
+    image: "container-registry.oracle.com/database/express:latest"
     healthcheck:
-      test: "mysql -h localhost -P 3306 --protocol=tcp -u user --password=password -e 'SELECT 1;'"
+      test: ["CMD", "/opt/oracle/checkDBStatus.sh"]
       interval: 1s
       timeout: 3s
-      retries: 10
-      start_period: 60s
-    volumes:
-      - ./sql-data:/var/lib/mysql
+      retries: 1000
+      start_period: 300s
     environment:
-        MYSQL_ROOT_PASSWORD: "password123"
-        MYSQL_USER: "user"
-        MYSQL_PASSWORD: "password"
+      ORACLE_PWD: "password123"
+    volumes:
+      - ./oracle-data:/opt/oracle/oradata
+    ports:
+    - "1521:1521"
+    - "5500:5500"
     networks:
       - dapr-network
-    ports:
-      - "3306:3306"
 
   server:
     build: ./Server/
     depends_on:
-      sql:
+      oracle-db:
           condition: service_healthy
-          #condition: service_started
       redis:
           condition: service_started
       placement:
@@ -50,9 +48,14 @@ services:
   java-api:
     build: ./java/
     depends_on:
-      - server
-      - redis
-      - placement
+      oracle-db:
+        condition: service_healthy
+      server:
+          condition: service_started
+      redis:
+          condition: service_started
+      placement:
+          condition: service_started
     networks:
       - dapr-network
     ports:

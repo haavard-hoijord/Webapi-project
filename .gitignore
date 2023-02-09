@@ -313,4 +313,5 @@ dist
 
 seq-data/
 sql-data/
+oracle-data/
 WebApi.code-workspace
