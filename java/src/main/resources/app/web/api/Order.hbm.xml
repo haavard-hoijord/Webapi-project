@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="app.web.api">
+    <class name="Order" table="ORDERS">
+        <id name="id" column="ORDER_ID">
+            <generator class="increment"/>
+        </id>
+        <property name="orderDate" type="timestamp" column="ORDER_DATE"/>
+        <property name="userID" column="USER_ID"/>
+        <property name="price" column="ORDER_PRICE"/>
+    </class>
+
+</hibernate-mapping>
