@@ -18,15 +18,14 @@
         <!-- JDBC connection pool (use the built-in) -->
         <property name="connection.pool_size">1</property>
 
-        <!-- Disable the second-level cache  -->
-        <property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>
+       <!-- <property name="hibernate.enable_lazy_load_no_trans">true</property>  -->
 
         <!-- Echo all executed SQL to stdout -->
         <property name="show_sql">true</property>
 
         <!-- Drop and re-create the database schema on startup -->
         <property name="hbm2ddl.auto">create</property>
-
-        <mapping resource="app/web/api/Order.hbm.xml"/>
+        <mapping class="app.web.api.Orders.Order"/>
+        <mapping class="app.web.api.Users.User"/>
     </session-factory>
 </hibernate-configuration>

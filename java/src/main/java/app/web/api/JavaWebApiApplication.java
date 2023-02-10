@@ -1,7 +1,10 @@
 package app.web.api;
 
+import app.web.api.Orders.Order;
+import app.web.api.Users.User;
 import io.dapr.client.DaprClient;
 import io.dapr.client.DaprClientBuilder;
+import lombok.Getter;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
@@ -23,6 +26,9 @@ import static serilogj.sinks.seq.SeqSinkConfigurator.seq;
 @SpringBootApplication
 public class JavaWebApiApplication {
 
+	@Getter
+	private static SessionFactory sessionFactory;
+
 	public static void main(String[] args) {
 		Log.setLogger(new LoggerConfiguration()
 				.writeTo(coloredConsole())
@@ -33,40 +39,37 @@ public class JavaWebApiApplication {
 
 		Log.information("Started java web api!");
 
-		DaprClient daprClient = new DaprClientBuilder().build();
-		daprClient.waitForSidecar(30 * 1000).block();
+		try (DaprClient daprClient = new DaprClientBuilder().build()) {
+			daprClient.waitForSidecar(30 * 1000).block();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 
 		StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
 				.configure()
 				.build();
 
+
 		try{
-			SessionFactory sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
-
-			Session session = sessionFactory.openSession();
-
-			session.beginTransaction();
-
-			session.persist(Order.builder().price(100d).userID(new Random().nextLong()).orderDate(new Date()));
-
-			session.getTransaction().commit();
-			session.close();
-
-
-			session = sessionFactory.openSession();
-			session.beginTransaction();
-			List result = session.createQuery( "from Order" ).list();
-			for ( Order order : (List<Order>) result ) {
-				System.out.println(order);
-			}
-			session.getTransaction().commit();
-			session.close();
-
-
-
+			sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
 		}catch (Exception e){
 			e.printStackTrace();
 			StandardServiceRegistryBuilder.destroy(registry);
+			return;
+		}
+
+		User user = User.builder().username("user123").build();
+		Order order = Order.builder().price(100d).user(user).orderDate(new Date()).build();
+		user.setOrders(List.of(order));
+
+
+		try(Session session = getSessionFactory().openSession()){
+			session.beginTransaction();
+
+			session.persist(user);
+			session.persist(order);
+
+			session.getTransaction().commit();
 		}
 
 		while(true) {}

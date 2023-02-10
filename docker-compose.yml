@@ -34,7 +34,7 @@ services:
 
   server-dapr:
     image: "daprio/daprd:edge"
-    command: ["./daprd", "-app-id", "server", "--app-port", "3000","-placement-host-address", "placement:50006","-components-path", "/components", "--config", "/dapr/config.yaml", "--log-level", "debug"]
+    command: ["./daprd", "-app-id", "server", "--app-port", "3000","-placement-host-address", "placement:50006","-components-path", "/components", "--config", "/dapr/config.yaml"]
     volumes:
       - "./Server/dapr:/dapr"
       - "./Server/dapr/components/:/components"
@@ -60,10 +60,11 @@ services:
       - dapr-network
     ports:
       - "5001:5001"
+      - "8080:8080"
 
   java-api-dapr:
     image: "daprio/daprd:edge"
-    command: ["./daprd", "-app-id", "java-api", "--app-port", "3002","-placement-host-address", "placement:50006","-components-path", "/components", "--config", "/dapr/config.yaml", "--log-level", "debug"]
+    command: ["./daprd", "-app-id", "java-api", "--app-port", "3002","-placement-host-address", "placement:50006","-components-path", "/components", "--config", "/dapr/config.yaml"]
     volumes:
       - "./java/dapr:/dapr"
       - "./java/dapr/components/:/components"
