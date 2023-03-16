@@ -1,0 +1,12 @@
+.App {
+  display: grid;
+  background-color: #282c34;
+  min-height: 100vh;
+}
+.App-link {
+  color: #61dafb;
+}
+
+.blur {
+  filter: blur(5px);
+}

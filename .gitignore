@@ -311,7 +311,9 @@ dist
 
 .vscode/
 
-seq-data/
-sql-data/
-oracle-data/
+out/seq-data/
+out/sql-data/
+out/oracle-data/
 WebApi.code-workspace
+
+.idea

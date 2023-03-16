@@ -1,0 +1,13 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: sqlserver.statestore
+spec:
+  type: state.mysql
+  version: v1
+  metadata:
+  - name: connectionString
+    #value: "server=sql;Data Source=sql;User ID=user;Password=password;Connect Timeout=60;Encrypt=False;MultiSubnetFailover=False"
+    value: "root:password123@tcp(db:3306)/?allowNativePasswords=true"
+    #"oracle://user/password@host:port/servicename"
+    #value: "oracle://system:password123@oracle-db:1521/xe"

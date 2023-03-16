@@ -1,61 +1,49 @@
 services:
-  oracle-db:
-    image: "container-registry.oracle.com/database/express:latest"
+  db:
+    image: "mysql"
     healthcheck:
-      test: ["CMD", "/opt/oracle/checkDBStatus.sh"]
+      test: "/usr/bin/mysql --user=root --password=password123 --execute \"SHOW DATABASES;\""
       interval: 1s
       timeout: 3s
       retries: 1000
       start_period: 300s
     environment:
-      ORACLE_PWD: "password123"
+      - MYSQL_ROOT_PASSWORD=password123
     volumes:
-      - ./oracle-data:/opt/oracle/oradata
+      - ./out/sql:/var/lib/mysql
     ports:
-    - "1521:1521"
-    - "5500:5500"
+    - "3306:3306"
     networks:
       - dapr-network
 
   server:
-    build: ./Server/
+    build: "StateStore/Server/"
     depends_on:
-      oracle-db:
+      db:
           condition: service_healthy
       redis:
           condition: service_started
       placement:
           condition: service_started
-
     networks:
       - dapr-network
     ports:
       - "5000:5000"
 
   server-dapr:
-    image: "daprio/daprd:edge"
-    command: ["./daprd", "-app-id", "server", "--app-port", "3000","-placement-host-address", "placement:50006","-components-path", "/components", "--config", "/dapr/config.yaml"]
-    volumes:
-      - "./Server/dapr:/dapr"
-      - "./Server/dapr/components/:/components"
+    build: "StateStore/Server/dapr/"
     depends_on:
-      server:
-          condition: service_started
+      - server
     network_mode: "service:server"
     networks:
       - dapr-network
 
   java-api:
-    build: ./java/
+    build: "Webapi/"
     depends_on:
-      oracle-db:
-        condition: service_healthy
-      server:
-          condition: service_started
-      redis:
-          condition: service_started
-      placement:
-          condition: service_started
+      - server
+      - redis
+      - placement
     networks:
       - dapr-network
     ports:
@@ -63,19 +51,24 @@ services:
       - "8080:8080"
 
   java-api-dapr:
-    image: "daprio/daprd:edge"
-    command: ["./daprd", "-app-id", "java-api", "--app-port", "3002","-placement-host-address", "placement:50006","-components-path", "/components", "--config", "/dapr/config.yaml"]
-    volumes:
-      - "./java/dapr:/dapr"
-      - "./java/dapr/components/:/components"
+    build: "Webapi/dapr/"
     depends_on:
       - java-api
     network_mode: "service:java-api"
     networks:
       - dapr-network
 
+  react-frontend:
+    build: "frontend/"
+    depends_on:
+      - java-api
+    networks:
+      - dapr-network
+    ports:
+      - 3000:80
+
   event-listener:
-    build: ./EventListener/
+    build: StateStore/EventListener/
     depends_on:
       - server
       - redis
@@ -84,11 +77,7 @@ services:
       - dapr-network
 
   event-listener-dapr:
-    image: "daprio/daprd:edge"
-    command: ["./daprd", "-app-id", "event-listener", "--app-port", "3001","-placement-host-address", "placement:50006","-components-path", "/components", "--config", "/dapr/config.yaml"]
-    volumes:
-      - "./EventListener/dapr/:/dapr"
-      - "./EventListener/dapr/components/:/components"
+    build: "StateStore/EventListener/dapr/"
     depends_on:
       - event-listener
     network_mode: "service:event-listener"
@@ -124,7 +113,7 @@ services:
     environment:
       - ACCEPT_EULA=Y
     volumes:
-      - "./seq-data/:/data"
+      - "./out/seq-data/:/data"
     networks:
       - dapr-network
 
