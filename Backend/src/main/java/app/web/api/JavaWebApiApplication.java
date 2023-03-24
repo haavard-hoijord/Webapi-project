@@ -50,7 +50,7 @@ public class JavaWebApiApplication {
 	@Getter
 	private static final String pubSub = "redis-pubsub";
 
-	private static ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+	private static final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
 	public static void main(String[] args) {
 		Log.setLogger(new LoggerConfiguration()

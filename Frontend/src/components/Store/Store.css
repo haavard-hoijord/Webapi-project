@@ -10,14 +10,15 @@ h1 {
 
     width: calc(5 * 230px);
     height: 100%;
-    margin: auto;
+    position: absolute;
+    right: 0;
 }
 .products {
     display: grid;
     grid-auto-flow: dense;
     grid-auto-rows: 380px;
     grid-auto-columns: 220px;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
 
     gap: 10px;
     height: calc(2.85 * 380px);

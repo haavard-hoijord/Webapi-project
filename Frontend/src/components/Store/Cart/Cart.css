@@ -2,7 +2,7 @@
     height: 100%;
     margin: auto;
     position: absolute;
-    left: 5%;
+    left:8%;
 }
 .cart {
     display: grid;
@@ -11,9 +11,10 @@
     grid-auto-rows: 90px;
 
     padding-left: 0;
-    width: 300px;
-    height: calc(4 * 220px);
+    width: 350px;
+    height: calc(3 * 220px);
     overflow-y: scroll;
+    overflow-x: hidden;
 }
 .cart_product {
     width: 300px;

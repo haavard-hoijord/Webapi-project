@@ -29,6 +29,19 @@ services:
       - backend
     network_mode: "service:backend"
 
+  sessions:
+    build: "Sessions/"
+    depends_on:
+      - backend
+    ports:
+      - "5000:80"
+
+  sessions-dapr:
+    build: "Sessions/dapr/"
+    depends_on:
+      - sessions
+    network_mode: "service:sessions"
+
   react-frontend:
     build: "Frontend/"
     depends_on:
