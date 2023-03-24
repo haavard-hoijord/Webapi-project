@@ -5,7 +5,7 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies (npm ci makes sure the exact versions in the lockfile gets installed)
-RUN npm install -g
+RUN npm install
 # Build the app
 RUN npm run build
 

@@ -13,98 +13,44 @@ services:
       - ./out/sql:/var/lib/mysql
     ports:
     - "3306:3306"
-    networks:
-      - dapr-network
 
-  server:
-    build: "StateStore/Server/"
+  backend:
+    build: "Backend/"
     depends_on:
-      db:
-          condition: service_healthy
-      redis:
-          condition: service_started
-      placement:
-          condition: service_started
-    networks:
-      - dapr-network
-    ports:
-      - "5000:5000"
-
-  server-dapr:
-    build: "StateStore/Server/dapr/"
-    depends_on:
-      - server
-    network_mode: "service:server"
-    networks:
-      - dapr-network
-
-  java-api:
-    build: "Webapi/"
-    depends_on:
-      - server
       - redis
       - placement
-    networks:
-      - dapr-network
     ports:
       - "5001:5001"
       - "8080:8080"
 
-  java-api-dapr:
-    build: "Webapi/dapr/"
+  backend-dapr:
+    build: "Backend/dapr/"
     depends_on:
-      - java-api
-    network_mode: "service:java-api"
-    networks:
-      - dapr-network
+      - backend
+    network_mode: "service:backend"
 
   react-frontend:
-    build: "frontend/"
+    build: "Frontend/"
     depends_on:
-      - java-api
-    networks:
-      - dapr-network
+      - backend
     ports:
       - 3000:80
-
-  event-listener:
-    build: StateStore/EventListener/
-    depends_on:
-      - server
-      - redis
-      - placement
-    networks:
-      - dapr-network
-
-  event-listener-dapr:
-    build: "StateStore/EventListener/dapr/"
-    depends_on:
-      - event-listener
-    network_mode: "service:event-listener"
-    networks:
-      - dapr-network
 
   zipkin:
     image: "openzipkin/zipkin"
     ports:
       - "9411:9411"
-    networks:
-      - dapr-network
 
   placement:
     image: "daprio/dapr"
     command: ["./placement", "-port", "50006"]
     ports:
       - "50006:50006"
-    networks:
-      - dapr-network
 
   redis:
     image: "redis:alpine"
     ports:
       - "6380:6379"
-    networks:
-      - dapr-network
 
   seq:
     image: datalust/seq:latest
@@ -114,8 +60,3 @@ services:
       - ACCEPT_EULA=Y
     volumes:
       - "./out/seq-data/:/data"
-    networks:
-      - dapr-network
-
-networks:
-    dapr-network:

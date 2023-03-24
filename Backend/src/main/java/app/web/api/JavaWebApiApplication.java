@@ -2,11 +2,10 @@ package app.web.api;
 
 import app.web.api.Products.Product;
 import app.web.api.Products.ProductHandler;
-import app.web.api.Users.User;
-import app.web.api.Users.UserHandler;
 import io.dapr.client.DaprClient;
 import io.dapr.client.DaprClientBuilder;
-import kong.unirest.Unirest;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import lombok.Getter;
 import net.datafaker.Faker;
 import org.apache.tomcat.util.buf.StringUtils;
@@ -30,6 +29,7 @@ import static serilogj.sinks.coloredconsole.ColoredConsoleSinkConfigurator.color
 import static serilogj.sinks.seq.SeqSinkConfigurator.seq;
 
 @SpringBootApplication
+@OpenAPIDefinition(info = @Info( title = "E-Commerce API", version = "1.0", description = "Store API"))
 public class JavaWebApiApplication {
 
 	@Getter
@@ -73,7 +73,7 @@ public class JavaWebApiApplication {
 			daprClient = new DaprClientBuilder().build();
 			daprClient.waitForSidecar(10 * 1000).block();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			e.printStackTrace();
 		}
 
 		try {
