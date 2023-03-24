@@ -40,7 +40,7 @@ public class SessionHandler {
 		return false;
 	}
 
-	@PostMapping("/login")
+	@PostMapping("/session/login")
 	public ResponseEntity userToken(@RequestBody Map<String, String> payload){
 		String username = payload.getOrDefault("username", null);
 		String pass = payload.getOrDefault("password", null);
@@ -56,7 +56,7 @@ public class SessionHandler {
 		return ResponseEntity.badRequest().build();
 	}
 
-	@PostMapping("/login/verify")
+	@PostMapping("/session/login/verify")
 	public ResponseEntity verifyToken(@RequestBody Map<String, String> payload){
 		String token = payload.getOrDefault("token", null);
 		String userId = payload.getOrDefault("userId", null);
@@ -64,7 +64,7 @@ public class SessionHandler {
 
 		if(status){
 			activeSessions.put(userId, token);
-			return ResponseEntity.ok(status);
+			return ResponseEntity.ok(true);
 		}
 
 		return ResponseEntity.badRequest().build();

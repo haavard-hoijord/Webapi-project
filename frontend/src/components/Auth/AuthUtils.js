@@ -1,7 +1,7 @@
-import {url} from "../../App";
+import {url, authUrl} from "../../App";
 
 export async function loginUser(credentials) {
-    return fetch(`${url}/login`, {
+    return fetch(`${authUrl}/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -31,7 +31,7 @@ export async function verify(userid, token) {
         return false;
     }
 
-    let response = await fetch(`${url}/login/verify`, {
+    let response = await fetch(`${authUrl}/verify`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

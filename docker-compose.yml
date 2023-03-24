@@ -16,8 +16,8 @@ services:
     networks:
       - dapr-network
 
-  server:
-    build: "StateStore/Server/"
+  sessions:
+    build: "Sessions/"
     depends_on:
       db:
           condition: service_healthy
@@ -28,20 +28,19 @@ services:
     networks:
       - dapr-network
     ports:
-      - "5000:5000"
+      - "5000:80"
 
-  server-dapr:
-    build: "StateStore/Server/dapr/"
+  sessions-dapr:
+    build: "Sessions/dapr/"
     depends_on:
-      - server
-    network_mode: "service:server"
+      - sessions
+    network_mode: "service:sessions"
     networks:
       - dapr-network
 
   java-api:
     build: "Webapi/"
     depends_on:
-      - server
       - redis
       - placement
     networks:
@@ -66,23 +65,6 @@ services:
       - dapr-network
     ports:
       - 3000:80
-
-  event-listener:
-    build: StateStore/EventListener/
-    depends_on:
-      - server
-      - redis
-      - placement
-    networks:
-      - dapr-network
-
-  event-listener-dapr:
-    build: "StateStore/EventListener/dapr/"
-    depends_on:
-      - event-listener
-    network_mode: "service:event-listener"
-    networks:
-      - dapr-network
 
   zipkin:
     image: "openzipkin/zipkin"

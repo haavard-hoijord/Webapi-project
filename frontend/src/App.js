@@ -6,6 +6,7 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import React, {useEffect} from "react";
 import {verifyLogin} from "./components/Auth/AuthUtils";
 
+export const authUrl = "http://localhost:5000"
 export const url = "http://localhost:8080"
 
 function setToken(userToken) {
